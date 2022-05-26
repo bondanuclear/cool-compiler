@@ -15,8 +15,7 @@ import java.util.List;
 
 
 public class GLexer {
-    private List<Token> errorList;
-    private List<String> tokenResult;
+    private ArrayList<String> tokenResult;
     private final int NUM_OF_LETTERS = 26;
 
     public CommonTokenStream tokensStream;
@@ -34,6 +33,7 @@ public class GLexer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         lexer = new GrammarLexer(charStream);
         tokensStream = new CommonTokenStream(lexer);
         tokensStream.fill();
@@ -47,6 +47,7 @@ public class GLexer {
             System.out.println(tokens.get(i).getLine());
         }
         Tokenizer();
+
     }
     // correct rule names.
     // the alphabet was written into getRuleName
@@ -76,8 +77,6 @@ public class GLexer {
     private void Tokenizer() {
         // result list of out tokens
         tokenResult = new ArrayList<>();
-        // in case of mistake we got an error list
-        errorList = new ArrayList<>();
         // array of our corrected rule names (without alphabet)
         String[] ruleNames = correctRuleNames();
 //        for(int i = 0; i < ruleNames.length; i++)
@@ -87,9 +86,8 @@ public class GLexer {
         for (var token : tokens) {
             if (token.getType() > 0) {
                 // add error to error list
-                if (ruleNames[token.getType() - 1].equals("ERROR")) {
-                    errorList.add(token);
-                } else {
+                if (!ruleNames[token.getType() - 1].equals("ERROR"))
+                {
                     tokenResult.add(Integer.toString(token.getLine()));
                     //System.out.println("Want to add " + ruleNames[token.getType() - 1]);
                     tokenResult.add(ruleNames[token.getType() - 1]);
@@ -99,22 +97,12 @@ public class GLexer {
                         tokenResult.add(token.getText());
                     else if(ruleNames[token.getType() - 1].equals("NUM"))
                         tokenResult.add(token.getText());
+                } else if (ruleNames[token.getType()-1].equals("ERROR"))
+                {
+                    System.out.println("Error occurred at " + token.getLine());
                 }
             }
         }
-        if (errorList.size() != 0)
-        {
-            System.out.println("Errors: ");
-            LogError();
-        }
-
-    }
-    public void LogError() {
-        for(int i = 0; i < errorList.size(); i++)
-        {
-            System.out.println("ERROR: " + errorList.get(i).getText() + " in " + errorList.get(i).getLine() + " line ");
-        }
-        System.exit(0);
     }
     public void PutTokensInFile(String resultFile) {
         try {

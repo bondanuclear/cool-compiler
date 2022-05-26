@@ -10,7 +10,7 @@ public class Main {
         System.out.println("Hello World");
 
         try {
-            String file = "complex-good-test.cl";
+            String file = "another-good-test.cl";
 
             GLexer lexer = new GLexer(file);
             lexer.PutTokensInFile(file + "-l");
